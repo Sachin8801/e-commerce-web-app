@@ -2,9 +2,18 @@ name: CI Pipeline For Test,Build and Push
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
+    branches: ["main", "dev"]
 
+  workflow_dispatch:
+    inputs:
+      run_pipeline:
+        description: "Run full CI pipeline?"
+        required: true
+        default: "yes"
+        type: choice
+        options:
+          - yes
+          - no
 env:
   IMAGE_NAME: easyshop
 
@@ -20,7 +29,7 @@ jobs:
       - name: Run lint
         run: npm run lint || echo "No lint configured"
 
-  # 🔹 2. Test (with MongoDB)
+  # 🔹 2. Test + Dependency Scan
   test:
     runs-on: ubuntu-latest
 
@@ -48,11 +57,24 @@ jobs:
 
       - name: Run tests
         run: npm test || echo "No tests found"
+         # 🔐 Dependency scan
+      - name: npm audit
+        run: npm audit --audit-level=high || true  
 
-  # 🔹 3. Build Docker Image
+  # 🔹 3. Secret Scan
+  secrets-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+
+        
+  # 🔹 4. Build Image
   build:
     runs-on: ubuntu-latest
-    needs: [lint, test]
+    needs: [lint, test, secrets-scan]
 
     steps:
       - uses: actions/checkout@v4
@@ -61,7 +83,27 @@ jobs:
         run: |
           docker build -t $IMAGE_NAME:${{ github.sha }} .
 
-  # 🔹 4. Integration Test (container-level)
+  # 🔹 5. Image Security Scan
+  image-scan:
+    if: ${{ github.event.inputs.run_pipeline != 'no' }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image again (isolated job)
+        run: docker build -t $IMAGE_NAME:${{ github.sha }} .
+
+      - name: Scan with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: $IMAGE_NAME:${{ github.sha }}
+          format: table
+          exit-code: 0   # 🔥 change to 1 later
+          severity: CRITICAL,HIGH
+          
+  # 🔹 6. Integration Test
   integration:
     runs-on: ubuntu-latest
     needs: build
