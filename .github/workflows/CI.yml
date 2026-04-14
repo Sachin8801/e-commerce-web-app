@@ -1,9 +1,6 @@
 name: CI Pipeline For Test,Build and Push
 
 on:
-  push:
-    branches: ["main", "dev"]
-
   workflow_dispatch:
     inputs:
       run_pipeline:
