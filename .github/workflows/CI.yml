@@ -159,8 +159,8 @@ jobs:
 
       - name: Update GitOps repo with new image
         run: |
-          git clone https://github.com/Sachin8801/ecommerce-gitops.git
-          cd ecommerce-gitops/helm/ecommerce
+          git clone https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/Sachin8801/ecommerce-gitops.git gitops-repo
+          cd gitops-repo/helm/ecommerce
 
           sed -i "s/tag:.*/tag: ${GITHUB_SHA}/" values.yaml
 
