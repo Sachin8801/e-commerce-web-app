@@ -165,10 +165,7 @@ jobs:
 
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           git clone git@github.com:Sachin8801/gitops-repo.git gitops-repo
-
           cd gitops-repo
-          ls -R
-          cd helm/ecommerce
           sed -i "s/tag:.*/tag: ${GITHUB_SHA}/" values.yaml
           git config user.name "github-actions"
           git config user.email "actions@github.com"
