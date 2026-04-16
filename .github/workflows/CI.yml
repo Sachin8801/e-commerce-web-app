@@ -162,7 +162,7 @@ jobs:
         
         run: |
         
-          git clone https://x-access-token:${{ secrets.GITOPS_TOKEN }}@github.com/Sachin8801/gitops-repo.git gitops-repo
+          git clone https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/Sachin8801/gitops-repo.git gitops-repo
           cd gitops-repo
           sed -i "s/tag:.*/tag: ${GITHUB_SHA}/" values.yaml
 
