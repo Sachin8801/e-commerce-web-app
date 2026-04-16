@@ -161,6 +161,8 @@ jobs:
         
         
         run: |
+
+        
           git clone https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/Sachin8801/e-commerce-web-app.git gitops-repo
           cd gitops-repo/helm/ecommerce 
 
