@@ -161,12 +161,9 @@ jobs:
         
         
         run: |
-
         
-          git clone https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/Sachin8801/e-commerce-web-app.git gitops-repo
-          cd ecommerce-gitops/ecommerce
-          # cd gitops-repo/helm/ecommerce 
-
+          git clone https://x-access-token:${{ secrets.GITOPS_TOKEN }}@github.com/Sachin8801/gitops-repo.git gitops-repo
+          cd gitops-repo
           sed -i "s/tag:.*/tag: ${GITHUB_SHA}/" values.yaml
 
           git config user.name "github-actions"
