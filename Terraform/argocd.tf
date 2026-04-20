@@ -1,0 +1,22 @@
+resource "helm_release" "argocd" {
+  name       = "argocd"
+  namespace  = "argocd"
+
+  repository = "https://argoproj.github.io/argo-helm"
+  chart      = "argo-cd"
+
+  create_namespace = true
+
+  values = [
+    <<EOF
+server:
+  service:
+    type: LoadBalancer
+EOF
+  ]
+
+  depends_on = [
+  module.eks,
+  module.eks.node_groups
+]
+}
