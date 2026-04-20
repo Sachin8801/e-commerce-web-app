@@ -8,15 +8,10 @@ resource "helm_release" "argocd" {
   create_namespace = true
 
   values = [
-    <<EOF
-server:
-  service:
-    type: LoadBalancer
-EOF
+    <<-EOF
+    server:
+      service:
+        type: LoadBalancer
+    EOF
   ]
-
-  depends_on = [
-  module.eks,
-  module.eks.node_groups
-]
 }

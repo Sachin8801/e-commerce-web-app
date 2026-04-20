@@ -1,21 +1,5 @@
-terraform {
-  required_version = ">= 1.5.0"
-
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.17"
-    }
-  }
-  
-}
-
 module "vpc" {
-  source = "../../modules/vpc"
+  source = "./modules/vpc"
 
   name = "eks-vpc"
   cidr = var.vpc_cidr
@@ -27,7 +11,7 @@ module "vpc" {
 }
 
 module "eks" {
-  source = "../../modules/eks"
+  source = "./modules/eks"
 
   cluster_name    = var.cluster_name
   vpc_id          = module.vpc.vpc_id
@@ -35,7 +19,10 @@ module "eks" {
 }
 
 module "argocd" {
-  source = "../../modules/argocd"
-
-  cluster_name = var.cluster_name
+  source = "./modules/argoCD"
+  
+  depends_on = [
+  module.eks,
+  module.eks.node_groups
+  ]
 }
