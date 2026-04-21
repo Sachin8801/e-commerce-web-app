@@ -1,3 +1,7 @@
 export default function Home() {
-  return <div>BUILD TEST OK</div>;
+  return (
+    <main>
+      <HeroSlider heroImages={[]} />
+    </main>
+  );
 }
