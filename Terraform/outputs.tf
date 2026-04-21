@@ -10,7 +10,7 @@ output "cluster_endpoint" {
 # Quick commands
 output "configure_kubectl" {
   description = "Command to configure kubectl"
-  value       = "aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${local.region}"
+  value       = "aws eks update-kubeconfig --name ${module.eks.cluster_name} --region ${var.region}"
 }
 
 output "argocd_initial_password" {

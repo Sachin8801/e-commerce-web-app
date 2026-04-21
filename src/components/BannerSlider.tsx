@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+
+import React, { useEffect, useState } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -7,7 +8,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "./ui/carousel";
-import AutoPlay from "embla-carousel-autoplay";
+
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -16,37 +17,58 @@ type BannerSliderProps = {
   className?: string;
 };
 
-const BannerSlider = ({ bannerImages, className }: BannerSliderProps) => {
-  return (
-    <div className={cn("container mt-10", className)}>
-      <Carousel
-        plugins={[
+export default function BannerSlider({
+  bannerImages,
+  className,
+}: BannerSliderProps) {
+  const [plugins, setPlugins] = useState<any[]>([]);
+
+  // ✅ CRITICAL FIX: load autoplay only in browser
+  useEffect(() => {
+    let mounted = true;
+
+    const loadPlugin = async () => {
+      const AutoPlay = (await import("embla-carousel-autoplay")).default;
+
+      if (mounted) {
+        setPlugins([
           AutoPlay({
             delay: 5000,
           }),
-        ]}
-      >
+        ]);
+      }
+    };
+
+    loadPlugin();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return (
+    <div className={cn("container mt-10", className)}>
+      <Carousel plugins={plugins}>
         <CarouselContent>
           {bannerImages.map((item, index) => (
             <CarouselItem
-              className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
               key={index}
+              className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
             >
               <Image
                 width={600}
                 height={400}
-                alt={"banner"}
+                alt="banner"
                 src={item.img}
                 className="w-full h-auto"
               />
             </CarouselItem>
           ))}
         </CarouselContent>
+
         <CarouselPrevious className="left-0" />
         <CarouselNext className="right-0" />
       </Carousel>
     </div>
   );
-};
-
-export default BannerSlider;
+}

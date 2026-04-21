@@ -1,6 +1,5 @@
 "use client";
 
-import AutoPlay from "embla-carousel-autoplay";
 import {
   Carousel,
   CarouselContent,
@@ -8,10 +7,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../ui/carousel";
+
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import SearchBar from "../SearchBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type HeroSliderProps = {
   autoPlay?: boolean;
@@ -27,13 +27,18 @@ type HeroSliderProps = {
   };
 };
 
-// Client component for handling image with error state
-const ClientImage = ({ src, alt, className }: { src: string; alt: string; className?: string }) => {
+const ClientImage = ({
+  src,
+  alt,
+  className,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+}) => {
   const [error, setError] = useState(false);
 
-  if (error) {
-    return <div className={cn("bg-gray-200", className)} />;
-  }
+  if (error) return <div className={cn("bg-gray-200", className)} />;
 
   return (
     <Image
@@ -47,23 +52,47 @@ const ClientImage = ({ src, alt, className }: { src: string; alt: string; classN
   );
 };
 
-const HeroSlider = ({
+export default function HeroSlider({
   heroImages,
   loop = true,
   autoPlay = true,
   content,
-}: HeroSliderProps) => {
-  return heroImages.length === 1 ? (
-    <div
-      className={
-        "bg-center bg-cover aspect-[1015/402] max-h-[650px] p-0 w-full relative"
+}: HeroSliderProps) {
+  const [plugins, setPlugins] = useState<any[]>([]);
+
+  // ✅ CRITICAL FIX: load autoplay ONLY in browser
+  useEffect(() => {
+    let mounted = true;
+
+    const loadPlugin = async () => {
+      if (!autoPlay) return;
+
+      const AutoPlay = (await import("embla-carousel-autoplay")).default;
+
+      if (mounted) {
+        setPlugins([
+          AutoPlay({
+            delay: 5000,
+          }),
+        ]);
       }
-    >
+    };
+
+    loadPlugin();
+
+    return () => {
+      mounted = false;
+    };
+  }, [autoPlay]);
+
+  return heroImages.length === 1 ? (
+    <div className="bg-center bg-cover aspect-[1015/402] max-h-[650px] p-0 w-full relative">
       <ClientImage
         src={heroImages[0].bgImg}
         alt="hero"
         className="w-full h-full object-cover"
       />
+
       {content && (
         <div
           className={cn(
@@ -79,31 +108,19 @@ const HeroSlider = ({
           >
             {content.title}
           </h1>
+
           {content.searchBar && <SearchBar />}
         </div>
       )}
     </div>
   ) : (
     <div className="w-full">
-      <Carousel
-        plugins={
-          autoPlay
-            ? [
-                AutoPlay({
-                  delay: 5000,
-                }),
-              ]
-            : undefined
-        }
-        opts={{
-          loop,
-        }}
-      >
+      <Carousel plugins={plugins} opts={{ loop }}>
         <CarouselContent>
           {heroImages.map((hero, index) => (
             <CarouselItem
               key={index}
-              className={`bg-center bg-cover aspect-[1015/402] max-h-[650px] p-0 w-full`}
+              className="bg-center bg-cover aspect-[1015/402] max-h-[650px] p-0 w-full"
             >
               <ClientImage
                 src={hero.bgImg}
@@ -113,11 +130,10 @@ const HeroSlider = ({
             </CarouselItem>
           ))}
         </CarouselContent>
+
         <CarouselPrevious className="left-0" />
         <CarouselNext className="right-0" />
       </Carousel>
     </div>
   );
-};
-
-export default HeroSlider;
+}
