@@ -60,6 +60,11 @@ export default function HeroSlider({
 }: HeroSliderProps) {
   const [plugins, setPlugins] = useState<any[]>([]);
 
+  // ✅ SAFE GUARD (MUST BE HERE INSIDE FUNCTION)
+  if (!heroImages || heroImages.length === 0) {
+    return null;
+  }
+
   // ✅ CRITICAL FIX: load autoplay ONLY in browser
   useEffect(() => {
     let mounted = true;

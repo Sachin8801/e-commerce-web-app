@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <main>
-      <HeroSlider heroImages={[]} />
+      <HeroSlider heroImages={[{ bgImg: "/heroImages/default.png" }]} />
     </main>
   );
 }
