@@ -3,7 +3,7 @@ module "eks" {
   version = "20.0.0"
 
   cluster_name    = var.cluster_name
-  cluster_version = "1.35"
+  cluster_version = "1.28"
 
   vpc_id     = var.vpc_id
   subnet_ids = var.private_subnets
@@ -18,7 +18,7 @@ module "eks" {
   eks_managed_node_groups = {
     default = {
       instance_types = ["t3.medium"]
-      ami_type       = "AL2023_x86_64_STANDARD"
+      ami_type       = "AL2_x86_64"
 
       min_size     = 1
       max_size     = 3
