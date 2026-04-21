@@ -1,3 +1,18 @@
+"use client";
+
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
+
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+import SearchBar from "../SearchBar";
+import { useEffect, useState } from "react";
+
 export default function HeroSlider({
   heroImages,
   loop = true,
