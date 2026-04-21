@@ -17,55 +17,55 @@ env:
 jobs:
 
   # 🔹 1. Lint (fast feedback)
-  #lint:
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - uses: actions/checkout@v4
-  #    - name: Install deps
-  #      run: npm ci
-  #    - name: Run lint
-  #      run: npm run lint || echo "No lint configured"
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: npm ci
+      - name: Run lint
+        run: npm run lint || echo "No lint configured"
 
   # 🔹 2. Test + Dependency Scan
-  #test:
-  #  runs-on: ubuntu-latest
+  test:
+    runs-on: ubuntu-latest
   
-  #  services:
-  #    mongodb:
-  #      image: mongo:latest
-  #      ports:
-  #        - 27017:27017
-  #      options: >-
-  #        --health-cmd="mongosh --eval 'db.adminCommand(\"ping\")'"
-  #        --health-interval=10s
-  #        --health-timeout=5s
-  #        --health-retries=5
+    services:
+      mongodb:
+        image: mongo:latest
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd="mongosh --eval 'db.adminCommand(\"ping\")'"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
-  #  steps:
-  #    - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-  #    - name: Setup Node
-  #      uses: actions/setup-node@v4
-  #      with:
-  #        node-version: 20
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-  #    - name: Install deps
-  #      run: npm ci
+      - name: Install deps
+        run: npm ci
 
-  #    - name: Run tests
-  #      run: npm test || echo "No tests found"
+      - name: Run tests
+        run: npm test || echo "No tests found"
          # 🔐 Dependency scan
-  #    - name: npm audit
-  #      run: npm audit --audit-level=high || true  
+      - name: npm audit
+        run: npm audit --audit-level=high || true  
 
   # 🔹 3. Secret Scan
-  #secrets-scan:
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - uses: actions/checkout@v4
+  secrets-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-  #    - name: Run Gitleaks
-  #      uses: gitleaks/gitleaks-action@v2
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
 
         
   # 🔹 4. Build Image
