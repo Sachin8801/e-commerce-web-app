@@ -1,3 +1,4 @@
+import HeroSlider from "@/components/heros/HeroSlider";
 export default function Home() {
   return (
     <main>

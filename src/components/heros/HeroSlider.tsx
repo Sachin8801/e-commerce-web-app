@@ -1,57 +1,3 @@
-"use client";
-
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "../ui/carousel";
-
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import SearchBar from "../SearchBar";
-import { useEffect, useState } from "react";
-
-type HeroSliderProps = {
-  autoPlay?: boolean;
-  loop?: boolean;
-  heroImages: {
-    bgImg: string;
-  }[];
-  content?: {
-    contentClass?: string;
-    title: string;
-    searchBar?: boolean;
-    titleClass?: string;
-  };
-};
-
-const ClientImage = ({
-  src,
-  alt,
-  className,
-}: {
-  src: string;
-  alt: string;
-  className?: string;
-}) => {
-  const [error, setError] = useState(false);
-
-  if (error) return <div className={cn("bg-gray-200", className)} />;
-
-  return (
-    <Image
-      height={600}
-      width={1000}
-      src={src}
-      alt={alt}
-      className={className}
-      onError={() => setError(true)}
-    />
-  );
-};
-
 export default function HeroSlider({
   heroImages,
   loop = true,
@@ -60,12 +6,7 @@ export default function HeroSlider({
 }: HeroSliderProps) {
   const [plugins, setPlugins] = useState<any[]>([]);
 
-  // ✅ SAFE GUARD (MUST BE HERE INSIDE FUNCTION)
-  if (!heroImages || heroImages.length === 0) {
-    return null;
-  }
-
-  // ✅ CRITICAL FIX: load autoplay ONLY in browser
+  // ✅ HOOK FIRST (ALWAYS)
   useEffect(() => {
     let mounted = true;
 
@@ -90,6 +31,11 @@ export default function HeroSlider({
     };
   }, [autoPlay]);
 
+  // ✅ NOW SAFE GUARD (AFTER HOOKS)
+  if (!heroImages || heroImages.length === 0) {
+    return null;
+  }
+
   return heroImages.length === 1 ? (
     <div className="bg-center bg-cover aspect-[1015/402] max-h-[650px] p-0 w-full relative">
       <ClientImage
@@ -99,18 +45,8 @@ export default function HeroSlider({
       />
 
       {content && (
-        <div
-          className={cn(
-            "absolute top-0 left-0 w-full h-full flex justify-center items-center flex-col gap-4 px-default",
-            content.contentClass
-          )}
-        >
-          <h1
-            className={cn(
-              "text-3xl font-semibold md:text-4xl lg:text-5xl text-center",
-              content.titleClass
-            )}
-          >
+        <div className={cn("absolute top-0 left-0 w-full h-full flex justify-center items-center flex-col gap-4 px-default", content.contentClass)}>
+          <h1 className={cn("text-3xl font-semibold md:text-4xl lg:text-5xl text-center", content.titleClass)}>
             {content.title}
           </h1>
 
